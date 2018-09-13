@@ -31,6 +31,7 @@ func test2() {
 	fmt.Println("type of v:", v.Type())
 	fmt.Println("settability of v:", v.CanSet())
 	v = v.Elem()
+	fmt.Println("type of v:", v.Type())
 	fmt.Println("The Elem of v is: ", v)
 	fmt.Println("settability of v:", v.CanSet())
 	v.SetFloat(3.1415) // this works!
@@ -73,8 +74,8 @@ func test3() {
 }
 
 type T struct {
-	A int
-	B string
+	A int `json:"a"`
+	B string `json:"b"`
 }
 
 func test4() {

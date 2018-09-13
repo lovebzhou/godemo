@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type Page struct {
@@ -37,6 +38,37 @@ func loadPage(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	fileInfos, err := ioutil.ReadDir(dataPath)
+	if err != nil {
+		return
+	}
+
+	// 写入Cookie
+	expiration := time.Now()
+	expiration = expiration.AddDate(0, 1, 1)
+	cookie := http.Cookie{Name: "username",
+		Value:  "tiny",
+		Raw:    "Raw value",
+		Path:   "/",
+		Domain: "localhost",
+		// Unparsed: []string{"1", "a", "3"},
+		HttpOnly: true,
+		// Secure:   true,
+		Expires: expiration}
+	http.SetCookie(w, &cookie)
+
+	locals := make(map[string]interface{})
+	pages := []string{}
+	for _, fi := range fileInfos {
+		name := fi.Name()
+		name = name[:len(name)-4]
+		pages = append(pages, name)
+	}
+	locals["pages"] = pages
+	templates.ExecuteTemplate(w, "home.html", locals)
+}
+
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
@@ -44,6 +76,16 @@ func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 		return
 	}
 	renderTemplate(w, "view", p)
+
+	// 读取Cookie
+	if cookie, err := r.Cookie("username"); err == nil {
+		log.Println(cookie)
+	}
+
+	for _, cookie := range r.Cookies() {
+		log.Println(cookie)
+	}
+
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request, title string) {
@@ -62,6 +104,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
@@ -96,22 +139,6 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 
 		fn(w, r, m[2])
 	}
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	fileInfos, err := ioutil.ReadDir(dataPath)
-	if err != nil {
-		return
-	}
-	locals := make(map[string]interface{})
-	pages := []string{}
-	for _, fi := range fileInfos {
-		name := fi.Name()
-		name = name[:len(name)-4]
-		pages = append(pages, name)
-	}
-	locals["pages"] = pages
-	templates.ExecuteTemplate(w, "home.html", locals)
 }
 
 func main() {

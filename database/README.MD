@@ -50,3 +50,16 @@ SELECT SCHEMA_NAME 'database', default_character_set_name 'charset', DEFAULT_COL
 ### 设置数据库编码
 
 ALTER DATABASE DBNAME CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+### 创建数据库
+
+CREATE DATABASE test CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE test CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+
+### 创建用户
+
+**mysql 8.0.12** 
+
+mysql> create user 'test'@'localhost' identified by '123qaz';
+mysql> grant all on test.* to 'test'@'localhost';

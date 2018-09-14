@@ -21,7 +21,9 @@ func makeDemo() {
 
 	s2 := make([]int, 1e3) // slice with len(s) == cap(s) == 1000
 	s2[9] = 999
-	// dumpSlice("s2", s2)
+	dumpSlice("s2", s2)
+	s2 = append(s2, 1001)
+	dumpSlice("s2", s2)
 
 	// s3 := make([]int, 1<<63)        // illegal: len(s) is not representable by a value of type int
 	// s4 := make([]int, 10, 0)        // illegal: len(s) > cap(s)
@@ -98,11 +100,11 @@ func complexDemo() {
 	var c64 = complex(5, -x)            // complex64
 	var s uint = complex(1, 0)          // untyped complex constant 1 + 0i can be converted to uint
 	// _ = complex(1, 2<<s)                // illegal: 2 assumes floating-point type, cannot shift
-	var rl = real(c64)                  // float32
-	var im = imag(a)                    // float64
-	const c = imag(b)                   // untyped constant -1.4
+	var rl = real(c64) // float32
+	var im = imag(a)   // float64
+	const c = imag(b)  // untyped constant -1.4
 	// _ = imag(3 << s)                    // illegal: 3 assumes complex type, cannot shift
-	fmt.Printf("a=%v\nb=%v\nx=%v\nc64=%v\ns=%v\nrl=%v\nim=%v\nc=%v\n", a,b,x,c64,s,rl,im,c)
+	fmt.Printf("a=%v\nb=%v\nx=%v\nc64=%v\ns=%v\nrl=%v\nim=%v\nc=%v\n", a, b, x, c64, s, rl, im, c)
 }
 
 func main() {

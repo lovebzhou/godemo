@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"time"
 )
 
@@ -44,10 +45,28 @@ func main() {
 	// crypto/rand.
 	// The Reader must be safe for use by multiple goroutines.
 	tlsConfig.Rand = rand.Reader
-	l, err := tls.Listen("tcp", ":8443", tlsConfig)
+
+	//
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "Hello world!")
+	})
+	go func() {
+		// http.ListenAndServeTLS(":8443", "/etc/certs/server.crt", "/etc/certs/server.key", nil)
+
+		server := http.Server{TLSConfig: tlsConfig}
+		if l, err := net.Listen("tcp", ":8443"); err == nil {
+			log.Println("start https server on", l.Addr().String())
+
+			server.ServeTLS(l, "", "")
+		}
+	}()
+
+	l, err := tls.Listen("tcp", ":5443", tlsConfig)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+	log.Println("start ssl socket server on", l.Addr().String())
+
 	for {
 		conn, err := l.Accept()
 		if err != nil {
@@ -57,5 +76,4 @@ func main() {
 			go HandleClientConnect(conn)
 		}
 	}
-
 }

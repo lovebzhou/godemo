@@ -11,7 +11,7 @@ import (
 
 func main() {
 	//注意这里要使用证书中包含的主机名称
-	conn, err := tls.Dial("tcp", "lovebzhou.net:8443", nil)
+	conn, err := tls.Dial("tcp", "lovebzhou.net:5443", nil)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

@@ -69,7 +69,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		renderHTML(w, "upload", nil)
 	}
 	if r.Method == "POST" {
-		f, h, err := r.FormFile("image")
+		f, h, err := r.FormFile("file")
 		check(err)
 		filename := h.Filename
 		defer f.Close()
